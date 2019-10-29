@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/cekkr/shanti.js/issues"
   },
-  "homepage": "https://github.com/cekkr/shanti.js#readme"
+  "homepage": "https://github.com/cekkr/shanti.js#readme",
+  "devDependencies": {
+    "electron": "^7.0.0"
+  }
 }
