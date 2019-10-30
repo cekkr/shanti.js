@@ -45,6 +45,34 @@ class ShantiApp {
 
             process.exit();
         });
+        
+        ///
+        /// Interceping window request
+        ///
+        const wpContentFilter = {
+            /*urls: [
+                ‘YOUR_WEBSITE_URL’
+            ]*/
+        };
+        
+        // https://electronjs.org/docs/api/web-request
+        win.webContents.session.webRequest.onBeforeRequest((details, callback) => {
+            console.log('onBeforeRequest details', details);
+            const { url } = details;
+            //const localURL = url.replace(‘YOUR_WEBSITE_URL’, ‘YOUR_REDIRECT_SITE’ )
+            // get local asset instead of one from pizza bottle
+
+            /*callback({
+                cancel: false,
+                redirectURL: ( encodeURI(localURL ) )
+            });*/
+        });
+
+        win.webContents.session.webRequest.onErrorOccurred((details) => {
+            console.log('error occurred on request');
+            console.log(details);
+        });
+    
     }
 }
 
