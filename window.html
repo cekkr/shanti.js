@@ -3,13 +3,39 @@
   <head>
     <title>Photon</title>
 
+    <script>
+        /*self.addEventListener('fetch', function(event) {
+          console.log('event', event);
+        });*/
+        
+        if ('serviceWorker' in navigator) { 
+            var interceptorLoaded = navigator.serviceWorker.controller!=null;
+            window.addEventListener('load', function() { 
+              navigator.serviceWorker.register('resources_manager.js')
+              .then(function(registration){
+                  console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                  if(!interceptorLoaded){
+                    //refresh after interceptor was loaded but only if the interceptor was not already loaded.
+                    window.location=window.location.href; 
+                  }
+              },
+                function(err) { // registration failed :( 
+                console.log('ServiceWorker registration failed: ', err); 
+              }); 
+          }); 
+        } 
+    </script>
+      
     <!-- Stylesheets -->
     <link rel="stylesheet" href="vendors/photon/dist/css/photon.css">
       
-      <style>
-        .demo-app-container{height:200px; width: 200px; border-radius:6px;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.3)};
-        
-      </style>
+    <!-- Scripts -->
+    <script src="vendors/jquery-ui/external/jquery/jquery.js"></script>
+      
+    <style>
+        .demo-app-container{height:200px; width: 200px; border-radius:6px;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.3)};    
+    </style>
+      
   </head>
   <body>
     <div class="window">
@@ -22,3 +48,9 @@
     </div>
   </body>
 </html>
+
+    <script>
+        /*$(document).ready(function(){
+           console.log('all done'); 
+        });*/
+    </script>

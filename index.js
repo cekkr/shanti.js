@@ -31,7 +31,7 @@ class ShantiApp {
         // and load the index.html of the app.
         //win.loadFile('index.html')
         //win.loadFile(file);
-        win.loadFile(shantiDir + '/test.html');
+        win.loadFile(shantiDir + '/window.html');
         
         // Open the DevTools.
         //win.webContents.openDevTools()
@@ -56,22 +56,24 @@ class ShantiApp {
         };
         
         // https://electronjs.org/docs/api/web-request
-        win.webContents.session.webRequest.onBeforeRequest((details, callback) => {
-            console.log('onBeforeRequest details', details);
-            const { url } = details;
-            //const localURL = url.replace(‘YOUR_WEBSITE_URL’, ‘YOUR_REDIRECT_SITE’ )
-            // get local asset instead of one from pizza bottle
+        if(false){
+            win.webContents.session.webRequest.onBeforeRequest((details, callback) => {
+                console.log('onBeforeRequest details', details);
+                const { url } = details;
+                //const localURL = url.replace(‘YOUR_WEBSITE_URL’, ‘YOUR_REDIRECT_SITE’ )
+                // get local asset instead of one from pizza bottle
 
-            /*callback({
-                cancel: false,
-                redirectURL: ( encodeURI(localURL ) )
-            });*/
-        });
+                /*callback({
+                    cancel: false,
+                    redirectURL: ( encodeURI(localURL ) )
+                });*/
+            });
 
-        win.webContents.session.webRequest.onErrorOccurred((details) => {
-            console.log('error occurred on request');
-            console.log(details);
-        });
+            win.webContents.session.webRequest.onErrorOccurred((details) => {
+                console.log('error occurred on request');
+                console.log(details);
+            });
+        }
     
     }
 }
