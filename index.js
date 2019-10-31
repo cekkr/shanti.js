@@ -46,9 +46,9 @@ class ShantiApp {
             // Dereference the window object, usually you would store windows
             // in an array if your app supports multi windows, this is the time
             // when you should delete the corresponding element.
-            win = null
+            mainWin = null
 
-            process.exit();
+            //process.exit();
         });
         
         ///
@@ -57,7 +57,7 @@ class ShantiApp {
         
         if(false){ // unused for the moment
             const wpContentFilter = {
-                //urls: ['file://*/*']
+                urls: ['*']
             };
 
             // https://electronjs.org/docs/api/web-request
@@ -106,8 +106,11 @@ app.on('activate', () => {
 ///
 
 ipcMain.on('resource-manager', (event, arg) => {
-    console.log('Received a page request', arg);
-    //event.sender.send("resource-manager", someReply);
+    console.log('Received a resource-manager request', arg);
+    
+    arg.dest = arg.from; // turn back
+    arg.body = "console.log('eecomi qua!')";
+    event.sender.send('resource-manager', arg);
 });
 
 

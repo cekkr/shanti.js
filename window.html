@@ -1,5 +1,13 @@
+<script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+
+</script>
+
 <!DOCTYPE html>
-<html>
+<html> 
   <head>
     <title>Photon</title>
 
@@ -13,61 +21,159 @@
         ///
         /// Load resources manager
         ///
-        const channelSW = new BroadcastChannel('sw-messages');
+        const channelRM = new BroadcastChannel('rm-messages');
         
         // Thanks to https://stackoverflow.com/questions/26516358/intercept-browser-requests-for-resources
         if ('serviceWorker' in navigator) { 
-            //var interceptorLoaded = navigator.serviceWorker.controller!=null; // in theory if(!interceptorLoaded) refresh();
-            window.addEventListener('load', function() { 
-                
-                function createServiceWorker(){
-                    navigator.serviceWorker.register('resources_manager.js')
-                    .then(function(registration){
-                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            
+            if (!navigator.serviceWorker.controller) {
+              console.log("This page is not controlled by a ServiceWorker");
+            }
+            else {
+              console.log("This page is controlled by a ServiceWorker");
+            }
+
+            function createServiceWorker(){
+                console.log('trying to creating resource manager...');
+
+                navigator.serviceWorker.register('resources_manager.js', {updateViaCache: 'none'})
+                .then(function(registration){
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    //window.location.reload(true);
+                },
+                function(err) { // registration failed :( 
+                    console.log('ServiceWorker registration failed: ', err); 
+                }); 
+            }
+            
+            navigator.serviceWorker.getRegistration().then(function(reg) {
+                if(reg){
+                    console.log('there is reg');
+                    
+                    function showWaitingMessage() {
+                        console.log("A new ServiceWorker is waiting to become active. It can't become active now because pages are still open that are controlled by the older version. Either close those tabs, or shift+reload them (which loads them without the ServiceWorker). That will allow the new version to become active, so it'll be used for the next page load.");
+                    }
+
+                    //reg.unregister();
+
+                    reg.addEventListener('updatefound', function() {
+                        console.log("Found a new ServiceWorker!");
+                        var installing = reg.installing;
+                        reg.installing.addEventListener('statechange', function() {
+                          if (installing.state == 'installed') {
+                            console.log("New ServiceWorker installed.");
+                            // give it a second to see if it activates immediately
+                            setTimeout(function() {
+                              if (installing.state == 'activated') {
+                                console.log("New ServiceWorker activated! Reload to load this page with the new ServiceWorker.");
+                              }
+                              else {
+                                showWaitingMessage();
+                              }
+                            }, 1000);
+                          }
+                          else if (installing.state == 'redundant') {
+                            console.log("The new worker failed to install - likely an error during install");
+                          }
+                        });
+                    });
+
+                    if (reg.waiting) {
+                    showWaitingMessage();
+                    }
+                }
+                else 
+                    createServiceWorker();
+            });
+            
+            
+        
+            if(false){
+                //var interceptorLoaded = navigator.serviceWorker.controller!=null; // in theory if(!interceptorLoaded) refresh();
+                window.addEventListener('load', function() { 
+
+                    function createServiceWorker(){
+                        console.log('trying to creating resource manager...');
+
+                        navigator.serviceWorker.register('resources_manager.js', {updateViaCache: 'none'})
+                        .then(function(registration){
+                            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                            //window.location.reload(true);
+                        },
+                        function(err) { // registration failed :( 
+                            console.log('ServiceWorker registration failed: ', err); 
+                        }); 
+                    }
+
+                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                        console.log('registrations', registrations);
+
+                        if(registrations.length == 0)
+                            createServiceWorker();
                     },
                     function(err) { // registration failed :( 
-                        console.log('ServiceWorker registration failed: ', err); 
-                    }); 
-                }
+                        console.log('no services: ', err); 
+                    });
 
-                // temporary... make this fastest
-                navigator.serviceWorker.getRegistration().then(function(reg) {
-                    if(processVars.refreshServiceWorker){
-                        if (reg) 
-                            reg.unregister().then(function() { window.location.reload(true); });
-                        else 
-                            createServiceWorker();
+                    /*if(true){
+
+                        // temporary... make this fastest
+                        navigator.serviceWorker.getRegistration().then(function(reg) {
+                            if(false && processVars.refreshServiceWorker){
+                                if (reg) 
+                                    reg.unregister().then(function() { window.location.reload(true); });
+                                else 
+                                    createServiceWorker();
+                            }
+                            else {
+                                ///
+                                /// Normally..
+                                ///
+                                if(!reg)
+                                    createServiceWorker();
+                                else
+                                    console.log('is still exists');
+                            }
+                        });
+
                     }
                     else {
-                        ///
-                        /// Normally..
-                        ///
-                        if(!reg)
-                            createServiceWorker();
-                    }
+                        navigator.serviceWorker.getRegistration().then(function(reg) {
+                            if (reg) 
+                                reg.unregister().then(function() { window.location.reload(true); });
+                        });
+                    }*/
+
+                }); 
+            
+                channelRM.addEventListener('message', (event) => {
+                    var d = event.data;
+
+                    console.log('Received message about', d);
+                    if(d.dest == 'p')
+                        ipcRenderer.send('resource-manager', d);
                 });
-     
-            }); 
-            
-            
-            
-            channelSW.addEventListener('message', event => {
-                var d = event.data;
-                
-                if(d.dir == 'p')
-                    ipcRenderer.send('resource-manager', [item, thisWindow, $event]);
-            });
-            
-            ipc.on('resource-manager', function (event, arg) {
-                // channelSW.postMessage({title: 'Hello from SW'});
-            });
+
+                ipcRenderer.on('resource-manager', function (event, arg) {
+                    if(arg.dest == 'rm')
+                        channelRM.postMessage(arg);
+                });
+            }
         } 
         
     </script>
       
+    <style>
+        .titlebar {
+            /* Makes topbar moveable */
+            -webkit-user-select: none;
+            -webkit-app-region: drag;
+        }
+    </style>
+      
     <!-- Stylesheets -->
     <link rel="stylesheet" href="vendors/photon/dist/css/photon.css">
-    <link rel="stylesheet" href="test.ejs">
+    <script src="test3.ejs.js"></script>
       
     <!-- Scripts -->
     <script src="vendors/jquery-ui/external/jquery/jquery.js"></script>
@@ -79,11 +185,11 @@
   </head>
   <body>
     <div class="window">
-        <header class="toolbar toolbar-header">
+        <header class="toolbar toolbar-header titlebar">
             <h1 class="title">Example</h1>
         </header>
         <div class="window-content">
-            And its content
+            empty
         </div>
     </div>
   </body>
