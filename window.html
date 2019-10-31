@@ -3,31 +3,71 @@
   <head>
     <title>Photon</title>
 
-    <script>
-        /*self.addEventListener('fetch', function(event) {
-          console.log('event', event);
-        });*/
+    <script>  
+        const { BrowserWindow } = require('electron').remote;
+        const { ipcRenderer } = require('electron');      
         
+        var thisWin = BrowserWindow.getFocusedWindow();
+        var processVars = require('electron').remote.getGlobal('processVars');
+        
+        ///
+        /// Load resources manager
+        ///
+        const channelSW = new BroadcastChannel('sw-messages');
+        
+        // Thanks to https://stackoverflow.com/questions/26516358/intercept-browser-requests-for-resources
         if ('serviceWorker' in navigator) { 
-            var interceptorLoaded = navigator.serviceWorker.controller!=null;
+            //var interceptorLoaded = navigator.serviceWorker.controller!=null; // in theory if(!interceptorLoaded) refresh();
             window.addEventListener('load', function() { 
-              navigator.serviceWorker.register('resources_manager.js')
-              .then(function(registration){
-                  console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                  if(!interceptorLoaded){
-                    //refresh after interceptor was loaded but only if the interceptor was not already loaded.
-                    window.location=window.location.href; 
-                  }
-              },
-                function(err) { // registration failed :( 
-                console.log('ServiceWorker registration failed: ', err); 
-              }); 
-          }); 
+                
+                function createServiceWorker(){
+                    navigator.serviceWorker.register('resources_manager.js')
+                    .then(function(registration){
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    },
+                    function(err) { // registration failed :( 
+                        console.log('ServiceWorker registration failed: ', err); 
+                    }); 
+                }
+
+                // temporary... make this fastest
+                navigator.serviceWorker.getRegistration().then(function(reg) {
+                    if(processVars.refreshServiceWorker){
+                        if (reg) 
+                            reg.unregister().then(function() { window.location.reload(true); });
+                        else 
+                            createServiceWorker();
+                    }
+                    else {
+                        ///
+                        /// Normally..
+                        ///
+                        if(!reg)
+                            createServiceWorker();
+                    }
+                });
+     
+            }); 
+            
+            
+            
+            channelSW.addEventListener('message', event => {
+                var d = event.data;
+                
+                if(d.dir == 'p')
+                    ipcRenderer.send('resource-manager', [item, thisWindow, $event]);
+            });
+            
+            ipc.on('resource-manager', function (event, arg) {
+                // channelSW.postMessage({title: 'Hello from SW'});
+            });
         } 
+        
     </script>
       
     <!-- Stylesheets -->
     <link rel="stylesheet" href="vendors/photon/dist/css/photon.css">
+    <link rel="stylesheet" href="test.ejs">
       
     <!-- Scripts -->
     <script src="vendors/jquery-ui/external/jquery/jquery.js"></script>
