@@ -21,17 +21,24 @@
         ///
         /// Load resources manager
         ///
-        const channelRM = new BroadcastChannel('rm-messages');
+        /*
+            !!! Currently unused !!!
+            In the ServiceWorker resources_manager.js during a respondWith() maybe for waitUntil function
+            is not possible send (and consequently receive) messages in the BroadcastChannel.
+            For this reason, for the moment, is not possible a dynamic transfer of resources directly from
+            the parent process without passing through TCP layers. 
+        */
         
         // Thanks to https://stackoverflow.com/questions/26516358/intercept-browser-requests-for-resources
-        if ('serviceWorker' in navigator) { 
-            
-            if (!navigator.serviceWorker.controller) {
+        if (false && 'serviceWorker' in navigator) { 
+            const channelRM = new BroadcastChannel('rm-messages');
+
+            if (!navigator.serviceWorker.controller) 
               console.log("This page is not controlled by a ServiceWorker");
-            }
-            else {
+            else 
               console.log("This page is controlled by a ServiceWorker");
-            }
+
+            var serviceWorker = false;
 
             function createServiceWorker(){
                 console.log('trying to creating resource manager...');
@@ -39,6 +46,8 @@
                 navigator.serviceWorker.register('resources_manager.js', {updateViaCache: 'none'})
                 .then(function(registration){
                     console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    
+                    serviceWorker = registration.active;
                     //window.location.reload(true);
                 },
                 function(err) { // registration failed :( 
@@ -48,6 +57,7 @@
             
             navigator.serviceWorker.getRegistration().then(function(reg) {
                 if(reg){
+                    serviceWorker = reg.active;
                     console.log('there is reg');
                     
                     function showWaitingMessage() {
@@ -79,87 +89,28 @@
                     });
 
                     if (reg.waiting) {
-                    showWaitingMessage();
+                        showWaitingMessage();
                     }
                 }
                 else 
                     createServiceWorker();
             });
             
+            channelRM.addEventListener('message', (event) => {
+                var d = event.data;
+
+                console.log('Received message about', d);
+                if(d.dest == 'p')
+                    ipcRenderer.send('resource-manager', d);
+            });
+
+            ipcRenderer.on('resource-manager', function (event, arg) {
+                if(arg.dest == 'rm')
+                    channelRM.postMessage(arg);   
+            });
             
-        
-            if(false){
-                //var interceptorLoaded = navigator.serviceWorker.controller!=null; // in theory if(!interceptorLoaded) refresh();
-                window.addEventListener('load', function() { 
-
-                    function createServiceWorker(){
-                        console.log('trying to creating resource manager...');
-
-                        navigator.serviceWorker.register('resources_manager.js', {updateViaCache: 'none'})
-                        .then(function(registration){
-                            console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                            //window.location.reload(true);
-                        },
-                        function(err) { // registration failed :( 
-                            console.log('ServiceWorker registration failed: ', err); 
-                        }); 
-                    }
-
-                    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                        console.log('registrations', registrations);
-
-                        if(registrations.length == 0)
-                            createServiceWorker();
-                    },
-                    function(err) { // registration failed :( 
-                        console.log('no services: ', err); 
-                    });
-
-                    /*if(true){
-
-                        // temporary... make this fastest
-                        navigator.serviceWorker.getRegistration().then(function(reg) {
-                            if(false && processVars.refreshServiceWorker){
-                                if (reg) 
-                                    reg.unregister().then(function() { window.location.reload(true); });
-                                else 
-                                    createServiceWorker();
-                            }
-                            else {
-                                ///
-                                /// Normally..
-                                ///
-                                if(!reg)
-                                    createServiceWorker();
-                                else
-                                    console.log('is still exists');
-                            }
-                        });
-
-                    }
-                    else {
-                        navigator.serviceWorker.getRegistration().then(function(reg) {
-                            if (reg) 
-                                reg.unregister().then(function() { window.location.reload(true); });
-                        });
-                    }*/
-
-                }); 
-            
-                channelRM.addEventListener('message', (event) => {
-                    var d = event.data;
-
-                    console.log('Received message about', d);
-                    if(d.dest == 'p')
-                        ipcRenderer.send('resource-manager', d);
-                });
-
-                ipcRenderer.on('resource-manager', function (event, arg) {
-                    if(arg.dest == 'rm')
-                        channelRM.postMessage(arg);
-                });
-            }
         } 
+        
         
     </script>
       
@@ -173,7 +124,7 @@
       
     <!-- Stylesheets -->
     <link rel="stylesheet" href="vendors/photon/dist/css/photon.css">
-    <script src="test3.ejs.js"></script>
+    <!--<script src="test3.ejs.js"></script>-->
       
     <!-- Scripts -->
     <script src="vendors/jquery-ui/external/jquery/jquery.js"></script>
