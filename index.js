@@ -11,13 +11,13 @@ var mainWin = null;
 
 class ShantiApp {
     construct(){
-        
+
     }
-    
+
     ready(fn){
         app.on('ready', fn);
     }
-    
+
     loadWindow(file){
         // https://electronjs.org/docs/api/browser-window
         // Create the browser window.
@@ -26,7 +26,8 @@ class ShantiApp {
             width: 800,
             height: 600,
             webPreferences: {
-              nodeIntegration: true
+              nodeIntegration: true,
+              enableRemoteModule: true,
             },
             titleBarStyle: 'hidden',
             frame: false,
@@ -36,8 +37,8 @@ class ShantiApp {
         // and load the index.html of the app.
         //win.loadFile('index.html')
         //win.loadFile(file);
-        mainWin.loadFile(shantiDir + '/window.html');
-        
+        mainWin.loadFile(shantiDir + '/window/index.html');
+
         // Open the DevTools.
         //win.webContents.openDevTools()
 
@@ -50,36 +51,15 @@ class ShantiApp {
 
             //process.exit();
         });
-        
+
         ///
-        /// Interceping window request
+        /// Window communications
         ///
-        
-        if(false){ // unused for the moment
-            const wpContentFilter = {
-                urls: ['*']
-            };
+        ipcMain.on('asynchronous-message', (event, arg) => {
+          console.log(arg) // prints "ping"
+          event.reply('asynchronous-reply', 'pong')
+        });
 
-            // https://electronjs.org/docs/api/web-request
-            mainWin.webContents.session.webRequest.onBeforeRequest((details, callback) => {
-                console.log('onBeforeRequest details', details);
-                const { url } = details;
-                //const localURL = url.replace(‘YOUR_WEBSITE_URL’, ‘YOUR_REDIRECT_SITE’ )
-                // get local asset instead of one from pizza bottle
-
-                /*callback({
-                    cancel: false,
-                    redirectURL: ( encodeURI(localURL ) )
-                });*/
-            });
-
-            mainWin.webContents.session.webRequest.onErrorOccurred((details) => {
-                console.log('error occurred on request');
-                console.log(details);
-            });
-            
-        }
-    
     }
 }
 
@@ -88,7 +68,7 @@ class ShantiApp {
 app.on('window-all-closed', () => {
     // On macOS it is common for applications and their menu bar
     // to stay active until the user quits explicitly with Cmd + Q
-    if (process.platform !== 'darwin') 
+    if (process.platform !== 'darwin')
         app.quit()
 
 });
@@ -96,7 +76,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (mainWin === null) 
+    if (mainWin === null)
         createWindow();
 });
 
@@ -107,7 +87,7 @@ app.on('activate', () => {
 
 ipcMain.on('resource-manager', (event, arg) => {
     console.log('Received a resource-manager request', arg);
-    
+
     arg.dest = arg.from; // turn back
     arg.body = "console.log('eecomi qua!')";
     event.sender.send('resource-manager', arg);

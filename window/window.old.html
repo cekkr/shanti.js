@@ -1,0 +1,68 @@
+<script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+
+</script>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Photon</title>
+
+    <script>
+        const { BrowserWindow } = require('electron').remote;
+        const { ipcRenderer } = require('electron');
+
+        var thisWin = BrowserWindow.getFocusedWindow();
+        var processVars = require('electron').remote.getGlobal('processVars');
+
+        ///
+        /// Window communication
+        ///
+        ipcRenderer.send('asynchronous-message', 'ping')
+
+        ipcRenderer.on('asynchronous-reply', (event, arg) => {
+          console.log(arg) // stampa "pong"
+        })
+
+    </script>
+
+    <style>
+        .titlebar {
+            /* Makes topbar moveable */
+            -webkit-user-select: none;
+            -webkit-app-region: drag;
+        }
+    </style>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="vendors/photon/dist/css/photon.css">
+    <!--<script src="test3.ejs.js"></script>-->
+
+    <!-- Scripts -->
+    <script src="vendors/jquery-ui/external/jquery/jquery.js"></script>
+
+    <style>
+        .demo-app-container{height:200px; width: 200px; border-radius:6px;overflow:hidden;box-shadow:0 0 60px rgba(0,0,0,.3)};
+    </style>
+
+  </head>
+  <body>
+    <div class="window">
+        <header class="toolbar toolbar-header titlebar">
+            <h1 class="title">Example</h1>
+        </header>
+        <div class="window-content">
+            empty
+        </div>
+    </div>
+  </body>
+</html>
+
+    <script>
+        /*$(document).ready(function(){
+           console.log('all done');
+        });*/
+    </script>

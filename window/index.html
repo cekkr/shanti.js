@@ -1,0 +1,153 @@
+<!-- Insert this line above script imports  -->
+<script>
+    if (typeof module === 'object') {
+        window.module = module;
+        module = undefined;
+    }
+
+</script>
+
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>Photon</title>
+
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="menu.css">
+        <link rel="stylesheet" href="../photon/dist/css/photon.css">
+
+        <!-- Javascript -->
+        <script src="../photon/dist/template-app/js/menu.js" charset="utf-8"></script>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+
+        <style>
+            .windowContainer {
+                position: relative !important;
+                width: 200px;
+                height: 200px;
+
+                border-radius: 5px;
+                border: 1px solid silver;
+
+                overflow: hidden;
+            }
+
+            #title-bar-btns {
+                -webkit-app-region: no-drag;
+                position: fixed;
+                top: 0px;
+                right: 0px;
+            }
+
+            .titleButton {
+                width: 21px;
+                height: 21px;
+                padding: 0px;
+                margin: 0px;
+
+                background: none;
+                border: none;
+                outline: 0;
+
+                font-size: 11px;
+            }
+
+            .titleButton:hover {
+                /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#ffffff+0,000000+100&0.9+1,0+74,0+99 */
+                background: -moz-radial-gradient(center, ellipse cover, rgba(255, 255, 255, 0.9) 0%, rgba(252, 252, 252, 0.9) 1%, rgba(66, 66, 66, 0) 74%, rgba(3, 3, 3, 0) 99%, rgba(0, 0, 0, 0) 100%);
+                /* FF3.6-15 */
+                background: -webkit-radial-gradient(center, ellipse cover, rgba(255, 255, 255, 0.9) 0%, rgba(252, 252, 252, 0.9) 1%, rgba(66, 66, 66, 0) 74%, rgba(3, 3, 3, 0) 99%, rgba(0, 0, 0, 0) 100%);
+                /* Chrome10-25,Safari5.1-6 */
+                background: radial-gradient(ellipse at center, rgba(255, 255, 255, 0.9) 0%, rgba(252, 252, 252, 0.9) 1%, rgba(66, 66, 66, 0) 74%, rgba(3, 3, 3, 0) 99%, rgba(0, 0, 0, 0) 100%);
+                /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+                filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#e6ffffff', endColorstr='#00000000', GradientType=1);
+                /* IE6-9 fallback on horizontal gradient */
+
+            }
+
+        </style>
+
+        <script>
+            const electron = require('electron');
+            const { BrowserWindow } = electron.remote;
+            const { ipcRenderer } = electron;
+            var vars = electron.remote.getGlobal('varsForWindow');
+
+            $(document).ready(function() {
+                $('#title-bar-btns').hide();
+                if (vars.platform != 'darwin')
+                    $('#title-bar-btns').show();
+            });
+
+            // Retrieve focused window
+            var thisWindow = BrowserWindow.getFocusedWindow();
+
+            ///
+            /// Window communication
+            ///
+            ipcRenderer.send('asynchronous-message', 'ping')
+
+            ipcRenderer.on('asynchronous-reply', (event, arg) => {
+              console.log(arg) // stampa "pong"
+            })
+
+
+        </script>
+    </head>
+
+    <body>
+        <div class="window">
+            <header class="toolbar toolbar-header">
+                <h1 class="title">Electron Editor</h1>
+                <div id="title-bar-btns">
+                    <button class="titleButton" onClick="thisWindow.minimize()"><span class="icon icon-down-open"></span></button>
+                    <button class="titleButton" onClick="thisWindow.isMaximized() ? thisWindow.unmaximize() : thisWindow.maximize()"><span class="icon icon-popup"></span></button>
+                    <button class="titleButton" onClick="thisWindow.close()"><span class="icon icon-cancel"></span></button>
+                </div>
+            </header>
+
+            <!-- Top menu -->
+            <nav class="flyout-nav" id="topMenu">
+            </nav>
+
+            <!-- Your app's content goes inside .window-content -->
+            <div class="window-content">
+                <div class="pane-group">
+                    <div class="pane pane-sm sidebar">
+                        <nav class="nav-group">
+                            <h5 class="nav-group-title">Toolbar</h5>
+                            <span class="nav-group-item">
+                                <span class="icon icon-home"></span>
+                                Element One
+                            </span>
+
+                        </nav>
+                    </div>
+
+                    <div class="pane">
+                        <!--<webview id="foo" src="window.html" style="width:200px; height:200px"></webview>-->
+
+                        <!--<div class="windowContainer">
+
+
+                        <div class="window">
+                            <header class="toolbar toolbar-header">
+                                <h1 class="title">Example</h1>
+                            </header>
+                            <div class="window-content">
+                                And its content
+                            </div>
+                        </div>
+                    </div>-->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <script src="js/menuBuilder.js" charset="utf-8"></script>
+
+</html>

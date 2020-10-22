@@ -1,0 +1,137 @@
+@charset "UTF-8";
+/** variables **/
+/** styles **/
+/* commons */
+/*html {
+  font-size: 14px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  font-size: 14px;
+  background-color: #666;
+  background-image: url("https://cdn.pixabay.com/photo/2018/01/19/17/14/bright-3092844_1280.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+}*/
+
+/* nav-bar styling */
+
+/* If there is menu is important to "shift" down the window content */
+.window-content {
+    margin-top: 20px;
+}
+
+.flyout-nav ul {
+  margin: 0;
+  padding: 0.25rem 0;
+  position: absolute;
+  display: none;
+  list-style-type: none;
+  white-space: nowrap;
+  background: rgba(235, 235, 235, 0.8);
+  border: 1px solid rgba(235, 235, 235, 0.8);
+  box-shadow: 2px 2px 3px -3px #333;
+  border-radius: 0.5rem;
+  transform: translateY(-0.25rem);
+    
+  z-index:9000;
+  font-size:12px;
+}
+
+.flyout-nav label{
+    font-size:12px;
+}
+
+.flyout-nav li {
+  position: relative;
+  display: block;
+}
+.flyout-nav li.separator {
+  margin-bottom: 0.25rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.25rem;
+}
+.flyout-nav li a {
+  text-decoration: none;
+  color: #333;
+  position: relative;
+  display: table;
+  width: 100%;
+}
+.flyout-nav li a .label,
+.flyout-nav li a .shortcut {
+  display: table-cell;
+  padding: 0rem 0.75rem 0rem 1.25rem; /* Modifica l'ultima cifra per spostare spazio a sinistra contenuto menu */
+}
+.flyout-nav li a .shortcut {
+  text-align: right;
+  padding-right:0.2rem;
+  color: #999;
+}
+.flyout-nav li a label {
+  cursor: pointer;
+}
+.flyout-nav li a input[type=checkbox] {
+  display: none;
+}
+.flyout-nav li a input[type=checkbox]:checked + .label:before {
+  content: "✔️";
+  position: absolute;
+  top: 0;
+  left: 0.35rem;
+}
+.flyout-nav li a:hover {
+  background: #1e88e5;
+}
+.flyout-nav li a:hover .label,
+.flyout-nav li a:hover .shortcut {
+  color: #fff;
+}
+.flyout-nav li.has-children > a {
+  margin-right: 2.5rem;
+}
+.flyout-nav li.has-children > a:after {
+  content: "▶";
+  text-align: left;
+  position: absolute;
+  right: 0;
+  padding: 0.25rem 1rem 0.25rem 1.75rem;
+}
+.flyout-nav li.disabled {
+  pointer-events: none;
+}
+.flyout-nav li.disabled .label,
+.flyout-nav li.disabled .shortcut {
+  color: #999;
+}
+.flyout-nav li:hover > ul {
+  display: block;
+  top: -1px;
+  left: 100%;
+}
+.flyout-nav > ul {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  width: 100%;
+  border-bottom: 1px solid rgba(235, 235, 235, 0.8);
+  box-shadow: 2px 2px 3px -3px #333;
+  border-radius: 0;
+  padding: 0;
+  transform: translateY(0);
+}
+.flyout-nav > ul > li > a > .label {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.flyout-nav > ul > li:hover > ul {
+  top: 100%;
+  left: -1px;
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding-top: 0;
+  transform: translateY(0);
+}
