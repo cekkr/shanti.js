@@ -1,10 +1,12 @@
+const { app, Menu } = require('electron');
+
 class MenuManager {
     
     constructor() {
     }
 
     setMenu() {
-        const template = [
+        var template = [
             {
                 label: 'File',
                 submenu: [
@@ -185,10 +187,10 @@ class MenuManager {
         }
 
         const menu = Menu.buildFromTemplate(template);
-        global.varsForWindow.menu = menu;
+        this.menu = menu;
         Menu.setApplicationMenu(menu);
-        
-        var m = Menu.getApplicationMenu();
+
+        //var m = Menu.getApplicationMenu();
         //m.items[0].submenu.items[0].click();
     }
 }

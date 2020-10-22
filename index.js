@@ -1,4 +1,6 @@
-const { app, BrowserWindow, globalShortcut, Menu, ipcMain } = require('electron');
+const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron');
+
+const menuManager = require('./managers/menu.js');
 
 global.appName = "test";
 global.shantiDir = __dirname;
@@ -30,14 +32,26 @@ class ShantiApp {
               enableRemoteModule: true,
             },
             titleBarStyle: 'hidden',
+            //transparent: true,
             frame: false,
-            //transparent: true
         });
 
         // and load the index.html of the app.
         //win.loadFile('index.html')
         //win.loadFile(file);
         mainWin.loadFile(shantiDir + '/window/index.html');
+
+        // Send variables for window
+        global.varsForWindow = {
+            platform: process.platform
+        };
+
+        menuManager.setMenu();
+        varsForWindow.menu = menuManager.menu;
+
+        mainWin.on('ready', () => {
+            //mainWin.webContents.send('init-data', init);
+        });
 
         // Open the DevTools.
         //win.webContents.openDevTools()

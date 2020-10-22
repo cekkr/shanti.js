@@ -15,10 +15,10 @@
 
         <!-- Stylesheets -->
         <link rel="stylesheet" href="menu.css">
-        <link rel="stylesheet" href="../photon/dist/css/photon.css">
+        <link rel="stylesheet" href="../assets/photon/dist/css/photon.css">
 
         <!-- Javascript -->
-        <script src="../photon/dist/template-app/js/menu.js" charset="utf-8"></script>
+        <!--<script src="../photon/dist/template-app/js/menu.js" charset="utf-8"></script>-->
 
         <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 
@@ -76,9 +76,10 @@
             var vars = electron.remote.getGlobal('varsForWindow');
 
             $(document).ready(function() {
-                $('#title-bar-btns').hide();
                 if (vars.platform != 'darwin')
                     $('#title-bar-btns').show();
+                else 
+                    $('#title-bar-btns').hide();
             });
 
             // Retrieve focused window
@@ -87,11 +88,15 @@
             ///
             /// Window communication
             ///
-            ipcRenderer.send('asynchronous-message', 'ping')
+            ipcRenderer.send('asynchronous-message', 'ping');
 
             ipcRenderer.on('asynchronous-reply', (event, arg) => {
               console.log(arg) // stampa "pong"
-            })
+            });
+
+            ipcRenderer.on('init-data', function (event,init) { 
+                
+            });
 
 
         </script>

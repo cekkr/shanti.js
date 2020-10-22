@@ -19,8 +19,7 @@ function addItem(el, item){
     el.append('<li><a href="#"><span class="label">'+item.label+'</span></a></li>');
     var elItem = el.children('li').last();  
     
-    if(item.click){
-        
+    if(item.click){    
         $(elItem).click(function(){
            item.click.apply(this, [item, thisWindow, thisWindow.webContents]);
         });
