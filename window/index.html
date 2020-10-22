@@ -76,10 +76,14 @@
             var vars = electron.remote.getGlobal('varsForWindow');
 
             $(document).ready(function() {
-                if (vars.platform != 'darwin')
+                if (vars.platform != 'darwin'){
                     $('#title-bar-btns').show();
-                else 
+                }
+                else {
                     $('#title-bar-btns').hide();
+                    $("#topMenu").hide();
+                    $('.window-content').css('margin-top','0');
+                }
             });
 
             // Retrieve focused window

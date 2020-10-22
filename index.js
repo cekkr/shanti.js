@@ -54,7 +54,7 @@ class ShantiApp {
         });
 
         // Open the DevTools.
-        //win.webContents.openDevTools()
+        //mainWin.webContents.openDevTools()
 
         // Emitted when the window is closed.
         mainWin.on('closed', () => {
